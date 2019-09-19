@@ -35,7 +35,7 @@
         <template slot-scope="scope">
           <router-link :to="'/admin/edit/'+scope.row.uid">
             <el-button type="primary" size="small" icon="el-icon-edit">
-              Edit
+              修改
             </el-button>
           </router-link>
         </template>
