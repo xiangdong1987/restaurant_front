@@ -135,6 +135,37 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/table',
+    component: Layout,
+    redirect: '/table/list',
+    name: '餐桌管理',
+    meta: {
+      title: '餐桌管理',
+      icon: 'tree-table'
+    },
+    children: [
+      {
+        path: 'create',
+        component: () => import('@/views/tables/create'),
+        name: '创建餐桌',
+        meta: { title: '创建餐桌', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/tables/edit'),
+        name: '编辑餐桌',
+        meta: { title: '编辑餐桌', noCache: true, activeMenu: '/tables/list' },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/tables/list'),
+        name: '餐桌列表',
+        meta: { title: '餐桌列表', icon: 'list' }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
