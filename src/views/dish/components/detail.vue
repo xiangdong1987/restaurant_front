@@ -6,22 +6,36 @@
           <div class="postInfo-container">
             <el-row>
               <el-col :span="12">
-                <el-form-item label-width="120px" label="餐桌名称:" prop="name">
+                <el-form-item label-width="120px" label="中文名:" prop="name">
                   <el-input v-model="postForm.name"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label-width="120px" label="最大用餐人数:" prop="max_people">
-                  <el-input v-model="postForm.max_people"></el-input>
+                <el-form-item label-width="120px" label="外文名:" prop="name_it">
+                  <el-input v-model="postForm.name_it"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label-width="120px" label="餐桌类型" prop="type">
-                  <el-select v-model="postForm.type">
+                <el-form-item label-width="120px" label="价格:" prop="price">
+                  <el-input v-model="postForm.price"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label-width="120px" label="折扣:" prop="discount">
+                  <el-input v-model="postForm.discount"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label-width="120px" label="菜品分类" prop="category">
+                  <el-select v-model="postForm.category">
                     <el-option
                       v-for="(item) in typeMap"
                       :key="item.key"
@@ -34,7 +48,7 @@
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label-width="120px" label="餐桌状态" prop="status">
+                <el-form-item label-width="120px" label="状态" prop="status">
                   <el-select v-model="postForm.status">
                     <el-option
                       v-for="(item) in statusMap"
@@ -43,6 +57,20 @@
                       :value="item.key"
                     />
                   </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label-width="120px" label="图片">
+                  <dropzone
+                    ref="dropzone"
+                    id="myVueDropzone"
+                    url="http://192.168.112.20:9501/common/upload"
+                    @dropzone-removedFile="dropzoneR"
+                    @dropzone-success="dropzoneS"
+                  />
+                  <input id="imgs" type="hidden" v-model="postForm.imgs" pro="imgs" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -55,19 +83,22 @@
 </template>
 
 <script>
-import { fetchTable } from "@/api/tables";
-import { updateTable } from "@/api/tables";
-import { addTable } from "@/api/tables";
-import { validURL } from "@/utils/validate";
+import Dropzone from "@/components/Dropzone";
+import { fetchList } from "@/api/dish";
+import { fetchItem } from "@/api/dish";
+import { updateItem } from "@/api/dish";
+import { addItem } from "@/api/dish";
 
 const defaultForm = {
-  username: "",
+  imgs: "",
   password: ""
 };
 
 export default {
-  name: "TablesDetail",
-  components: {},
+  name: "Detail",
+  components: {
+    Dropzone
+  },
   props: {
     isEdit: {
       type: Boolean,
@@ -86,41 +117,17 @@ export default {
         callback();
       }
     };
-    var validatePass = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入密码"));
-      } else {
-        if (this.postForm.password_confirm !== "") {
-          this.$refs.postForm.validateField("password_confirm");
-        }
-        callback();
-      }
-    };
-    var validatePass2 = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请再次输入密码"));
-      } else if (value !== this.postForm.password) {
-        callback(new Error("两次输入密码不一致!"));
-      } else {
-        callback();
-      }
-    };
     return {
       postForm: Object.assign({}, defaultForm),
       loading: false,
       typeMap: this.$store.getters.system.table.type_map,
       statusMap: this.$store.getters.system.table.status_map,
       roles: [],
-      rules: {
-        username: [{ validator: validateRequire }],
-        password: [{ validator: validatePass, trigger: "blur" }],
-        password_confirm: [{ validator: validatePass2, trigger: "blur" }]
-      },
+      rules: {},
       tempRoute: {}
     };
   },
   created() {
-    console.log(this.$store.getters);
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id;
       this.buttonName = "编辑";
@@ -130,13 +137,46 @@ export default {
       this.postForm = Object.assign({}, defaultForm);
     }
     this.tempRoute = Object.assign({}, this.$route);
+
   },
   methods: {
+    insertImg(url) {
+      var imgs = this.postForm.imgs;
+      var list = new Array();
+      list = imgs.split(",");
+      list.push(url);
+      var arr2 = list.filter(function(element, index, self) {
+        return self.indexOf(element) === index;
+      });
+      this.postForm.imgs = list.join(",").trim(",");
+    },
+    deleteImg(url) {
+      var imgs = this.postForm.imgs;
+      var list = new Array();
+      list = imgs.split(",");
+      list.splice(array.findIndex(item => item === url), 1);
+      this.postForm.imgs = list.join(",").trim(",");
+    },
+    initImgs() {
+      var list = this.postForm.imgs.split(",");
+      console.log(this.$refs.dropzone);
+      this.$refs.dropzone.initImages(list);
+    },
+    dropzoneS(file, x, xhr) {
+      console.log(xhr);
+      this.insertImg(xhr.data.url);
+      this.$message({ message: "Upload success", type: "success" });
+    },
+    dropzoneR(file) {
+      this.deleteImg(xhr.data.url);
+      this.$message({ message: "Delete success", type: "success" });
+    },
     fetchData(id) {
-      fetchTable(id)
+      fetchItem(id)
         .then(response => {
           this.postForm = response.data;
           this.setPageTitle();
+          this.initImgs();
         })
         .catch(err => {
           console.log(err);
@@ -154,10 +194,9 @@ export default {
     submitForm() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-          console.log(valid);
           this.loading = true;
           if (this.isEdit) {
-            updateTable(this.postForm).then(() => {
+            updateItem(this.postForm).then(() => {
               this.$notify({
                 title: "Success",
                 message: "更新成功",
@@ -166,7 +205,7 @@ export default {
               });
             });
           } else {
-            addTable(this.postForm).then(() => {
+            addItem(this.postForm).then(() => {
               this.$notify({
                 title: "Success",
                 message: "创建成功",
@@ -181,22 +220,6 @@ export default {
           return false;
         }
       });
-    },
-    handleAvatarSuccess(res, file) {
-      console.log(res);
-      this.postForm.avatar = res.data.url;
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
-      }
-      if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
-      }
-      return isJPG && isLt2M;
     }
   }
 };
@@ -238,31 +261,6 @@ export default {
     border-radius: 0px;
     border-bottom: 1px solid #bfcbd9;
   }
-}
-</style>
-<style>
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-}
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
 }
 </style>
 

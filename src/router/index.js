@@ -7,10 +7,9 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 /* Router Modules */
-import componentsRouter from './modules/components'
-import chartsRouter from './modules/charts'
+import adminRouter from './modules/admin'
 import tableRouter from './modules/table'
-import nestedRouter from './modules/nested'
+import dishRouter from './modules/dish'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -104,69 +103,9 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  {
-    path: '/admin',
-    component: Layout,
-    redirect: '/admin/list',
-    name: '管理员',
-    meta: {
-      title: '管理员',
-      icon: 'peoples'
-    },
-    children: [
-      {
-        path: 'create',
-        component: () => import('@/views/admin/create'),
-        name: '创建管理员',
-        meta: { title: '创建管理员', icon: 'edit' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/admin/edit'),
-        name: '编辑管理员',
-        meta: { title: '编辑管理员', noCache: true, activeMenu: '/admin/list' },
-        hidden: true
-      },
-      {
-        path: 'list',
-        component: () => import('@/views/admin/list'),
-        name: '管理员列表',
-        meta: { title: '管理员列表', icon: 'list' }
-      }
-    ]
-  },
-  {
-    path: '/table',
-    component: Layout,
-    redirect: '/table/list',
-    name: '餐桌管理',
-    meta: {
-      title: '餐桌管理',
-      icon: 'tree-table'
-    },
-    children: [
-      {
-        path: 'create',
-        component: () => import('@/views/tables/create'),
-        name: '创建餐桌',
-        meta: { title: '创建餐桌', icon: 'edit' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/tables/edit'),
-        name: '编辑餐桌',
-        meta: { title: '编辑餐桌', noCache: true, activeMenu: '/tables/list' },
-        hidden: true
-      },
-      {
-        path: 'list',
-        component: () => import('@/views/tables/list'),
-        name: '餐桌列表',
-        meta: { title: '餐桌列表', icon: 'list' }
-      }
-    ]
-  },
-
+  adminRouter,
+  tableRouter,
+  dishRouter,
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

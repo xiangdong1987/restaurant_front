@@ -1,41 +1,37 @@
-/** When your routing table is too long, you can split it into small modules **/
+/** When your routing table is too long, you can split it into small modules**/
 
 import Layout from '@/layout'
 
 const tableRouter = {
   path: '/table',
   component: Layout,
-  redirect: '/table/complex-table',
-  name: 'Table',
+  redirect: '/table/list',
+  name: '餐桌管理',
   meta: {
-    title: 'Table',
+    title: '餐桌管理',
     icon: 'table'
   },
   children: [
     {
-      path: 'dynamic-table',
-      component: () => import('@/views/table/dynamic-table/index'),
-      name: 'DynamicTable',
-      meta: { title: 'Dynamic Table' }
+      path: 'create',
+      component: () => import('@/views/tables/create'),
+      name: '创建餐桌',
+      meta: { title: '创建餐桌', icon: 'edit' }
     },
     {
-      path: 'drag-table',
-      component: () => import('@/views/table/drag-table'),
-      name: 'DragTable',
-      meta: { title: 'Drag Table' }
+      path: 'edit/:id(\\d+)',
+      component: () => import('@/views/tables/edit'),
+      name: '编辑餐桌',
+      meta: { title: '编辑餐桌', noCache: true, activeMenu: '/tables/list' },
+      hidden: true
     },
     {
-      path: 'inline-edit-table',
-      component: () => import('@/views/table/inline-edit-table'),
-      name: 'InlineEditTable',
-      meta: { title: 'Inline Edit' }
-    },
-    {
-      path: 'complex-table',
-      component: () => import('@/views/table/complex-table'),
-      name: 'ComplexTable',
-      meta: { title: 'Complex Table' }
+      path: 'list',
+      component: () => import('@/views/tables/list'),
+      name: '餐桌列表',
+      meta: { title: '餐桌列表', icon: 'list' }
     }
   ]
 }
+
 export default tableRouter
