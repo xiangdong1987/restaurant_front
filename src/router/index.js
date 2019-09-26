@@ -10,7 +10,7 @@ import Layout from '@/layout'
 import adminRouter from './modules/admin'
 import tableRouter from './modules/table'
 import dishRouter from './modules/dish'
-
+import orderRouter from './modules/order'
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -106,6 +106,7 @@ export const asyncRoutes = [
   adminRouter,
   tableRouter,
   dishRouter,
+  orderRouter,
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

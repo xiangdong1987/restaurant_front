@@ -16,7 +16,7 @@ const tableRouter = {
       path: 'create',
       component: () => import('@/views/tables/create'),
       name: '创建餐桌',
-      meta: { title: '创建餐桌', icon: 'edit' }
+      meta: { title: '创建餐桌', icon: 'edit', bardge: 0 }
     },
     {
       path: 'edit/:id(\\d+)',
@@ -29,7 +29,7 @@ const tableRouter = {
       path: 'list',
       component: () => import('@/views/tables/list'),
       name: '餐桌列表',
-      meta: { title: '餐桌列表', icon: 'list' }
+      meta: { title: '餐桌列表', icon: 'list'}
     }
   ]
 }

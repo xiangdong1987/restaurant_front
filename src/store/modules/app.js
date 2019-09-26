@@ -3,7 +3,8 @@ import Cookies from 'js-cookie'
 const state = {
   sidebar: {
     opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
-    withoutAnimation: false
+    withoutAnimation: false,
+    cartNum: 0
   },
   device: 'desktop',
   size: Cookies.get('size') || 'medium'
@@ -30,6 +31,10 @@ const mutations = {
   SET_SIZE: (state, size) => {
     state.size = size
     Cookies.set('size', size)
+  },
+  SET_CART_NUM: (state, num) => {
+    state.sidebar.cartNum = num
+
   }
 }
 
@@ -45,6 +50,9 @@ const actions = {
   },
   setSize({ commit }, size) {
     commit('SET_SIZE', size)
+  },
+  setCartNum({ commit }, num) {
+    commit('SET_CART_NUM', num)
   }
 }
 
