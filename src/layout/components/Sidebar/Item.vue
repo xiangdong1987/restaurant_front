@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="xdd-menu">
     <svg-icon :icon-class="icon" />
     <span slot="title">{{title}}</span>
     <el-badge
@@ -7,6 +7,7 @@
       class="mark"
       :value="this.$store.getters.sidebar.cartNum"
     />
+    <slot></slot>
   </div>
 </template>
 

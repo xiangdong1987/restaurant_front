@@ -1,17 +1,14 @@
 <template>
   <div class="menu">
     <el-row>
-      <el-col :span="8" sty v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 2 : 0">
-        <el-card :body-style="{ padding: '0px' }">
-          <img
-            src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-            class="image"
-          />
+      <el-col :span="span" v-for="(item,key,index) in list" :key="index">
+        <el-card :body-style="{ padding: '10px' }">
+          <img :src="item.imgs" class="image" />
           <div style="padding: 14px;">
-            <span>好吃的汉堡</span>
+            <span>{{item.name}}</span>
             <div class="bottom clearfix">
-              <time class="time">{{ currentDate }}</time>
-              <el-button type="text" class="button">操作按钮</el-button>
+              <time class="time">{{ item.price }}$</time>
+              <el-button type="text" class="button" @click="addToCart">+</el-button>
             </div>
           </div>
         </el-card>
@@ -38,10 +35,12 @@
 .button {
   padding: 0;
   float: right;
+  font-size: large;
 }
 
 .image {
   width: 100%;
+  height: 350px;
   display: block;
 }
 
@@ -57,11 +56,43 @@
 </style>
 
 <script>
+import { fetchList } from "@/api/dish";
 export default {
   data() {
+    if (this.device === "mobile") {
+      var span = 24;
+    } else {
+      var span = 6;
+    }
     return {
-      currentDate: new Date()
+      currentDate: new Date(),
+      span: span,
+      list: null,
+      listQuery: {
+        page: 1,
+        limit: 20
+      }
     };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    getList() {
+      this.listLoading = true;
+      fetchList(this.listQuery).then(response => {
+        this.list = response.data.items;
+        console.log(response.data.items);
+        this.total = response.data.total;
+        this.listLoading = false;
+      });
+    },
+    addToCart() {
+      var num = this.$store.getters.sidebar.cartNum;
+      console.log(num)
+      num++;
+      this.$store.dispatch("app/setCartNum", num);
+    }
   }
 };
 </script>

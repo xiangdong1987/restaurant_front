@@ -8,7 +8,7 @@ const orderRouter = {
   redirect: '/order/menu',
   name: '下单管理',
   meta: {
-    title: '菜单管理',
+    title: '下单管理',
     icon: 'shopping'
   },
   children: [
