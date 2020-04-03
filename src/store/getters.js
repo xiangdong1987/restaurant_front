@@ -1,5 +1,7 @@
 const getters = {
   sidebar: state => state.app.sidebar,
+  cart: state => state.cart,
+  cartNum: state => state.sidebar.cartNum,
   size: state => state.app.size,
   device: state => state.app.device,
   visitedViews: state => state.tagsView.visitedViews,
@@ -11,6 +13,6 @@ const getters = {
   roles: state => state.user.roles,
   permission_routes: state => state.permission.routes,
   errorLogs: state => state.errorLog.logs,
-  system: state => state.user.system,
+  system: state => state.user.system
 }
 export default getters

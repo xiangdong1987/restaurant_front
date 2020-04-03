@@ -34,7 +34,6 @@ const mutations = {
   },
   SET_CART_NUM: (state, num) => {
     state.sidebar.cartNum = num
-
   }
 }
 

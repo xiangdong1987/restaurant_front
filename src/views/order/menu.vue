@@ -1,14 +1,14 @@
 <template>
   <div class="menu">
     <el-row>
-      <el-col :span="span" v-for="(item,key,index) in list" :key="index">
+      <el-col v-for="(item,key,index) in list" :key="index" :span="span">
         <el-card :body-style="{ padding: '10px' }">
-          <img :src="item.imgs" class="image" />
+          <img :src="item.imgs" class="image">
           <div style="padding: 14px;">
-            <span>{{item.name}}</span>
+            <span>{{ item.name }}</span>
             <div class="bottom clearfix">
               <time class="time">{{ item.price }}$</time>
-              <el-button type="text" class="button" @click="addToCart">+</el-button>
+              <el-button type="text" class="button" @click="addToCart(item)">+</el-button>
             </div>
           </div>
         </el-card>
@@ -17,52 +17,56 @@
   </div>
 </template>
 <style>
-.time {
-  font-size: 13px;
-  color: #999;
-}
-.menu {
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 10px;
-}
-.bottom {
-  margin-top: 13px;
-  line-height: 12px;
-}
+  .time {
+    font-size: 13px;
+    color: #999;
+  }
 
-.button {
-  padding: 0;
-  float: right;
-  font-size: large;
-}
+  .menu {
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+  }
 
-.image {
-  width: 100%;
-  height: 350px;
-  display: block;
-}
+  .bottom {
+    margin-top: 13px;
+    line-height: 12px;
+  }
 
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: "";
-}
+  .button {
+    padding: 0;
+    float: right;
+    font-size: large;
+  }
 
-.clearfix:after {
-  clear: both;
-}
+  .image {
+    width: 100%;
+    height: 350px;
+    display: block;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+
+  .clearfix:after {
+    clear: both;
+  }
 </style>
 
 <script>
-import { fetchList } from "@/api/dish";
+import { fetchList } from '@/api/dish'
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
   data() {
-    if (this.device === "mobile") {
-      var span = 24;
+    if (this.device === 'mobile') {
+      var span = 24
     } else {
-      var span = 6;
+      var span = 6
     }
     return {
       currentDate: new Date(),
@@ -72,27 +76,28 @@ export default {
         page: 1,
         limit: 20
       }
-    };
+    }
+  },
+  computed: {
+    ...mapGetters({
+      totalNum: 'cart/totalNum'
+    })
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     getList() {
-      this.listLoading = true;
+      this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.items;
-        console.log(response.data.items);
-        this.total = response.data.total;
-        this.listLoading = false;
-      });
+        this.list = response.data.items
+        this.total = response.data.total
+        this.listLoading = false
+      })
     },
-    addToCart() {
-      var num = this.$store.getters.sidebar.cartNum;
-      console.log(num)
-      num++;
-      this.$store.dispatch("app/setCartNum", num);
-    }
+    ...mapActions({
+      addToCart: 'cart/addToCart'
+    })
   }
-};
+}
 </script>

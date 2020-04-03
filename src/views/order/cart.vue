@@ -1,13 +1,13 @@
 <template>
-  <detail :is-edit="false" />
+  <cart-list :is-edit="false" />
 </template>
 
 <script>
-import Detail from './components/detail'
+import CartList from './components/CartList'
 
 export default {
   name: 'CreateForm',
-  components: { Detail }
+  components: { CartList }
 }
 </script>
 
