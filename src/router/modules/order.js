@@ -6,9 +6,9 @@ const orderRouter = {
   path: '/order',
   component: Layout,
   redirect: '/order/menu',
-  name: '下单管理',
+  name: '订单管理',
   meta: {
-    title: '下单管理',
+    title: '订单管理',
     icon: 'shopping'
   },
   children: [
@@ -22,15 +22,19 @@ const orderRouter = {
       path: 'cart',
       component: () => import('@/views/order/cart'),
       name: '购物车',
-      meta: { title: '购物车', icon: 'shopping', badge: 1 },
+      meta: { title: '购物车', icon: 'shopping', badge: 1 }
     },
     {
       path: 'list',
       component: () => import('@/views/order/list'),
-      name: '已选菜单',
-      meta: { title: '已选菜单', icon: 'list' }
+      name: '订单列表',
+      meta: { title: '订单列表', icon: 'list' }
+    },
+    {
+      path: 'detail/:id(\\d+)',
+      component: () => import('@/views/order/detail'),
+      hidden: true
     }
   ]
 }
-
 export default orderRouter

@@ -84,7 +84,6 @@
 
 <script>
 import Dropzone from "@/components/Dropzone";
-import { fetchList } from "@/api/dish";
 import { fetchItem } from "@/api/dish";
 import { updateItem } from "@/api/dish";
 import { addItem } from "@/api/dish";
@@ -106,17 +105,6 @@ export default {
     }
   },
   data() {
-    const validateRequire = (rule, value, callback) => {
-      if (value === "") {
-        this.$message({
-          message: rule.field + "为必传项",
-          type: "error"
-        });
-        callback(new Error(rule.field + "为必传项"));
-      } else {
-        callback();
-      }
-    };
     return {
       postForm: Object.assign({}, defaultForm),
       loading: false,
@@ -142,17 +130,14 @@ export default {
   methods: {
     insertImg(url) {
       var imgs = this.postForm.imgs;
-      var list = new Array();
+      var list = [];
       list = imgs.split(",");
       list.push(url);
-      var arr2 = list.filter(function(element, index, self) {
-        return self.indexOf(element) === index;
-      });
       this.postForm.imgs = list.join(",").trim(",");
     },
     deleteImg(url) {
       var imgs = this.postForm.imgs;
-      var list = new Array();
+      var list = [];
       list = imgs.split(",");
       list.splice(array.findIndex(item => item === url), 1);
       this.postForm.imgs = list.join(",").trim(",");
@@ -167,7 +152,7 @@ export default {
       this.insertImg(xhr.data.url);
       this.$message({ message: "Upload success", type: "success" });
     },
-    dropzoneR(file) {
+    dropzoneR(file, x, xhr) {
       this.deleteImg(xhr.data.url);
       this.$message({ message: "Delete success", type: "success" });
     },

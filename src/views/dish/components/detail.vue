@@ -74,7 +74,7 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-button type="primary" @click="submitForm">{{ this.buttonName }}</el-button>
+            <el-button type="primary" @click="submitForm">{{ buttonName }}</el-button>
           </div>
         </el-col>
       </div>
@@ -84,7 +84,6 @@
 
 <script>
 import Dropzone from '@/components/Dropzone'
-import { fetchList } from '@/api/dish'
 import { fetchItem } from '@/api/dish'
 import { updateItem } from '@/api/dish'
 import { addItem } from '@/api/dish'
@@ -106,17 +105,6 @@ export default {
     }
   },
   data() {
-    const validateRequire = (rule, value, callback) => {
-      if (value === '') {
-        this.$message({
-          message: rule.field + '为必传项',
-          type: 'error'
-        })
-        callback(new Error(rule.field + '为必传项'))
-      } else {
-        callback()
-      }
-    }
     return {
       postForm: Object.assign({}, defaultForm),
       loading: false,
@@ -141,19 +129,16 @@ export default {
   methods: {
     insertImg(url) {
       var imgs = this.postForm.imgs
-      var list = new Array()
+      var list = []
       list = imgs.split(',')
       list.push(url)
-      var arr2 = list.filter(function(element, index, self) {
-        return self.indexOf(element) === index
-      })
       this.postForm.imgs = list.join(',').trim(',')
     },
     deleteImg(url) {
       var imgs = this.postForm.imgs
-      var list = new Array()
+      var list = []
       list = imgs.split(',')
-      list.splice(array.findIndex(item => item === url), 1)
+      list.splice(list.findIndex(item => item === url), 1)
       this.postForm.imgs = list.join(',').trim(',')
     },
     initImgs() {
@@ -162,11 +147,10 @@ export default {
       this.$refs.dropzone.initImages(list)
     },
     dropzoneS(file, x, xhr) {
-      console.log(xhr)
       this.insertImg(xhr.data.url)
       this.$message({ message: 'Upload success', type: 'success' })
     },
-    dropzoneR(file) {
+    dropzoneR(file, x, xhr) {
       this.deleteImg(xhr.data.url)
       this.$message({ message: 'Delete success', type: 'success' })
     },

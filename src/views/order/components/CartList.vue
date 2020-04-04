@@ -32,7 +32,7 @@
     </el-table>
     <br>
     <el-button type="info" style="float: right">{{ "商品总额：" + moneyTotal }}</el-button>
-    <el-button type="primary" style="float: left">下单</el-button>
+    <el-button type="primary" style="float: left" @click="order">下单</el-button>
   </div>
 </template>
 
@@ -52,39 +52,7 @@ export default {
   },
   data() {
     return {
-      tableData: [{
-        goods: {
-          img: 'http://i1.mifile.cn/a1/pms_1474859997.10825620!80x80.jpg',
-          descript: '小米手环2'
-        },
-        price: 149,
-        number: 1,
-        goodTotal: 149
-      }, {
-        goods: {
-          img: 'http://i1.mifile.cn/a1/pms_1482321199.12589253!80x80.jpg',
-          descript: '小米活塞耳机 清新版 黑色'
-        },
-        price: 29,
-        number: 1,
-        goodTotal: 29
-      }, {
-        goods: {
-          img: 'http://i1.mifile.cn/a1/pms_1468288696.74437986!80x80.jpg',
-          descript: '米家LED随身灯 增强版 蓝色'
-        },
-        price: 14.9,
-        number: 1,
-        goodTotal: 14.9
-      }, {
-        goods: {
-          img: 'http://i1.mifile.cn/a1/pms_1476688193.46995320.jpg?width=140&height=140',
-          descript: '10000mAh小米移动电源2 银色'
-        },
-        price: 79,
-        number: 1,
-        goodTotal: 79
-      }],
+      tableData: this.$store.getters.cart.add,
       moneyTotal: 0,
       multipleSelection: []
     }
@@ -157,6 +125,10 @@ export default {
         }
         this.moneyTotal += selection[i].goodTotal
       }
+    },
+    // 下订单
+    order: function() {
+      console.log(this.multipleSelection)
     }
   }
 }
