@@ -1,6 +1,5 @@
 <template>
   <div class="app-container">
-    <el-tag style="margin-bottom: 10px">餐桌：{{ table_name }}</el-tag>
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
@@ -10,6 +9,11 @@
       <el-table-column align="center" label="菜品">
         <template slot-scope="scope">
           <span>{{ scope.row.dish_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="餐桌">
+        <template slot-scope="scope">
+          <span>{{ scope.row.table_name }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="数量">
@@ -34,7 +38,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="120">
         <template slot-scope="scope">
-            <el-button type="danger" icon="el-icon-delete" @click="cancelOrder(scope.row.id)" circle></el-button>
+          <el-button type="success" icon="el-icon-check" circle @click="makingDone(scope.row.id)"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -50,8 +54,8 @@
 </template>
 
 <script>
-import { fetchSubOrder } from '@/api/order'
-import { delSubOrder } from '@/api/order'
+import { fetchKitchenOrder } from '@/api/order'
+import { makingDone } from '@/api/order'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
 export default {
@@ -80,33 +84,32 @@ export default {
     }
   },
   created() {
-    const id = this.$route.params && this.$route.params.id
-    this.getList(id)
+    this.getList(0)
   },
   methods: {
-    cancelOrder(id){
-      this.$confirm('确定取消订单吗？', '提示', {
+    makingDone(id){
+      this.$confirm('确定出餐？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delSubOrder(id).then(() => {
+        makingDone(id).then(() => {
           this.freshTable()
           this.$message({
             type: 'success',
-            message: '取消成功!'
+            message: '出餐成功!'
           })
         })
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: '已取消'
+          message: '出餐已取消'
         })
       })
     },
-    getList(id) {
+    getList(status) {
       this.listLoading = true
-      fetchSubOrder(id, this.listQuery).then(response => {
+      fetchKitchenOrder(status, this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
         this.listLoading = false
@@ -114,8 +117,7 @@ export default {
       })
     },
     freshTable(){
-      const id = this.$route.params && this.$route.params.id
-      this.getList(id)
+      this.getList(0)
     },
     goBack() {
       console.log('go back')

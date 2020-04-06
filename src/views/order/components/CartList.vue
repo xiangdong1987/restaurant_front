@@ -1,12 +1,15 @@
 <template>
-  <div>
+  <div class="app-container">
+    <el-tag style="margin-bottom: 10px">餐桌：{{ table_name }}</el-tag>
     <el-table :data="tableData" border style="width: 100%" @selection-change="selected">
       <el-table-column type="selection" width="50" />
-      <el-table-column label="商品名称" width="600">
+      <el-table-column label="商品名称" >
         <template slot-scope="scope">
-          <div style="margin-left: 20px">
+          <div style="float: left;">
             <img :src="scope.row.goods.img" style="height: 50px;width: 50px">
-            <span style="font-size: 18px;padding-left: 50px;">{{ scope.row.goods.descript }}</span>
+          </div>
+          <div style="float: left;padding-left: 10px;padding-top: 15px;">
+            <span>{{ scope.row.goods.descript }}</span>
           </div>
         </template>
       </el-table-column>
@@ -21,8 +24,8 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="小计" width="150" prop="goodTotal" />
-      <el-table-column label="操作">
+      <el-table-column label="小计" prop="goodTotal" />
+      <el-table-column label="操作" width="100">
         <template slot-scope="scope">
           <el-button type="danger" @click="handleDelete(scope.$index, scope.row)">
             删除<i class="el-icon-delete2 el-icon--right" />
@@ -37,6 +40,7 @@
 </template>
 
 <script>
+import { makeOrder } from '@/api/order'
 const defaultForm = {
   imgs: '',
   password: ''
@@ -54,19 +58,15 @@ export default {
     return {
       tableData: this.$store.getters.cart.add,
       moneyTotal: 0,
-      multipleSelection: []
+      multipleSelection: [],
+      table_name: '',
+      table_id:''
     }
   },
   created() {
-    if (this.isEdit) {
-      const id = this.$route.params && this.$route.params.id
-      this.buttonName = '编辑'
-      this.fetchData(id)
-    } else {
-      this.buttonName = '创建'
-      this.postForm = Object.assign({}, defaultForm)
-    }
-    this.tempRoute = Object.assign({}, this.$route)
+    this.table_name=this.$store.getters.cart.table_name
+    this.table_id=this.$store.getters.cart.table_id
+    this.tableData = this.$store.getters.cart.add
   },
   methods: {
     handleDelete(index, row) {
@@ -76,6 +76,8 @@ export default {
         type: 'warning'
       }).then(() => {
         // 删除数组中指定的元素
+        //删除商品
+        this.$store.dispatch('cart/deleteToShop',row)
         this.tableData.splice(index, 1)
         this.$message({
           type: 'success',
@@ -104,6 +106,7 @@ export default {
         addGood.number = parseInt(addGood.number)
       }
       addGood.number += 1
+      this.$store.dispatch('cart/updateGood', addGood)
     },
     del: function(delGood) {
       if (typeof delGood.number === 'string') {
@@ -112,6 +115,7 @@ export default {
       if (delGood.number > 1) {
         delGood.number -= 1
       }
+      this.$store.dispatch('cart/updateGood', delGood)
     },
     // 返回的参数为选中行对应的对象
     selected: function(selection) {
@@ -128,7 +132,44 @@ export default {
     },
     // 下订单
     order: function() {
-      console.log(this.multipleSelection)
+      var selection=this.multipleSelection
+      if (selection.length > 0) {
+        this.$confirm('确定下单吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let order={}
+          order.table_id = this.table_id
+          let foods=[]
+          for (var i = 0; i < selection.length; i++) {
+            let one={}
+            one.dish_id=selection[i].id
+            one.num=selection[i].number
+            foods[i]=one
+          }
+          order.foods=foods
+          //清空购物车
+          this.tableData=[]
+          this.$store.dispatch('cart/clearToCart')
+          makeOrder(order).then(() => {
+            this.$message({
+              type: 'success',
+              message: '下单成功!'
+            })
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+      }else{
+        this.$message({
+          type: 'warning',
+          message: '请选择需要的菜品'
+        })
+      }
     }
   }
 }
